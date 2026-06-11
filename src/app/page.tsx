@@ -192,7 +192,7 @@ export default function LandingPage() {
             {boats.map((item, index) => {
               const palette = CARD_PALETTES[index % CARD_PALETTES.length];
               return (
-                <Grid item xs={12} sm={6} md={4} key={item._id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item._id}>
                   <Card sx={{ borderRadius: '16px', boxShadow: `0 10px 30px ${palette.glow}`, height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ position: 'relative' }}>
                       <CardMedia component="img" image={item.image || 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=600'} sx={{ height: 220 }} />
@@ -207,7 +207,7 @@ export default function LandingPage() {
                       </Stack>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <Box>
-                          <Typography variant="caption" color="text.secondary" display="block">Base Price</Typography>
+                          <Typography variant="caption" color="text.secondary" >Base Price</Typography>
                           <Typography variant="h6" sx={{ fontWeight: 900, color: palette.accentColor }}>₹{(item.basePrice || item.price || 0).toLocaleString('en-IN')}</Typography>
                         </Box>
                         <Stack direction="row" spacing={1}>
