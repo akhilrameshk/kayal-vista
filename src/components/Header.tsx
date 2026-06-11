@@ -15,7 +15,9 @@ import {
   ListItemButton,
   ListItemText,
   Stack,
-  useTheme
+  useTheme,
+  Divider,
+  ListItemIcon
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
@@ -23,6 +25,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 
 // Navigation Configs
 const PUBLIC_LINKS = [
@@ -109,6 +112,7 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
             </Stack>
           </Link>
 
+          {/* Desktop Navigation */}
           <Box component="nav" sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
             {activeNavLinks.map((link) => (
               <Button key={link.path} component={Link} href={link.path} sx={{ color: pathname === link.path ? 'primary.main' : 'text.secondary', fontWeight: pathname === link.path ? 800 : 600, textTransform: 'none', px: 2, borderRadius: 2 }}>
@@ -117,6 +121,7 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
             ))}
           </Box>
 
+          {/* Desktop Action Links */}
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', display: { xs: 'none', md: 'flex' } }}>
             <IconButton onClick={onToggleThemeMode}>{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}</IconButton>
             {isAuthenticated ? (
@@ -126,21 +131,97 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
             )}
           </Stack>
 
+          {/* Mobile Menu Icon Toggle */}
           <IconButton sx={{ display: { md: 'none' } }} onClick={toggleDrawer(true)}><MenuIcon /></IconButton>
         </Box>
       </Container>
 
+      {/* Mobile Drawer Slide-out menu */}
       <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer(false)}>
-        <Box sx={{ width: 260, pt: 3 }} onClick={toggleDrawer(false)}>
-          <List>
-            {activeNavLinks.map((link) => (
-              <ListItem key={link.path} disablePadding>
-                <ListItemButton component={Link} href={link.path} selected={pathname === link.path}>
-                  <ListItemText primary={link.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+        <Box sx={{ width: 280, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
+          
+          {/* User Profile Info Section */}
+          {isAuthenticated && (
+            <Box sx={{ p: 3, bgcolor: 'action.hover' }}>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <AccountCircleIcon color="primary" sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
+                    {userName}
+                  </Typography>
+                  {userRole && (
+                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'lowercase' }}>
+                      {userRole.replace('_', ' ')}
+                    </Typography>
+                  )}
+                </Box>
+              </Stack>
+            </Box>
+          )}
+
+          {/* Interactive Utility Section (Theme Toggle) */}
+          <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, pl: 1 }}>
+              {theme.palette.mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+            </Typography>
+            <IconButton onClick={onToggleThemeMode}>
+              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+          </Box>
+
+          <Divider />
+
+          {/* Navigation Links list */}
+          <List sx={{ flexGrow: 1, pt: 1 }} onClick={toggleDrawer(false)}>
+  {activeNavLinks.map((link) => (
+    <ListItem key={link.path} disablePadding>
+      <ListItemButton component={Link} href={link.path} selected={pathname === link.path}>
+        <ListItemText 
+          primary={
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                fontWeight: pathname === link.path ? 800 : 600,
+                color: pathname === link.path ? 'primary.main' : 'text.primary'
+              }}
+            >
+              {link.label}
+            </Typography>
+          } 
+        />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
+          <Divider />
+
+          {/* Authenticated Actions Footer (Login / Logout) */}
+          <Box sx={{ p: 2 }} onClick={toggleDrawer(false)}>
+            {isAuthenticated ? (
+              <Button 
+                fullWidth 
+                variant="outlined" 
+                color="error" 
+                startIcon={<LogoutIcon />} 
+                onClick={handleLogoutAction}
+                sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+              >
+                Logout Account
+              </Button>
+            ) : (
+              <Button 
+                fullWidth 
+                variant="contained" 
+                component={Link} 
+                href="/login"
+                startIcon={<LoginIcon />}
+                sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+              >
+                Sign In
+              </Button>
+            )}
+          </Box>
+
         </Box>
       </Drawer>
     </Box>
