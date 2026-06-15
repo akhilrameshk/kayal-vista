@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+  <defs>
+    <linearGradient id="kvBlue96" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#157b8c" />
+      <stop offset="100%" stop-color="#0f5c69" />
+    </linearGradient>
+    <linearGradient id="kvTeal96" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#188496" />
+      <stop offset="100%" stop-color="#105763" />
+    </linearGradient>
+    <linearGradient id="kvHull96" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ab823c" />
+      <stop offset="100%" stop-color="#694e22" />
+    </linearGradient>
+    <linearGradient id="kvRoof96" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cfab53" />
+      <stop offset="100%" stop-color="#917430" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(6, 11) scale(0.245)">
+    <path d="M 40,120 Q 90,113 140,121 T 240,119 T 340,123" fill="none" stroke="url(#kvTeal96)" stroke-width="6" stroke-linecap="round" />
+    <path d="M 15,126 Q 80,121 140,128 T 260,124 T 365,127" fill="none" stroke="url(#kvBlue96)" stroke-width="7" stroke-linecap="round" />
+    <path d="M 55,134 Q 120,131 180,136 T 310,133" fill="none" stroke="#188496" stroke-width="4" opacity="0.7" stroke-linecap="round" />
+
+    <path d="M 52,20 L 80,20 L 80,122 L 52,122 Z" fill="url(#kvBlue96)" />
+    <path d="M 80,72 L 148,22 L 183,22 L 110,74 L 188,122 L 152,122 L 93,82 L 80,92 L 80,65 Z" fill="url(#kvBlue96)" />
+
+    <path d="M 190,22 L 217,22 L 250,100 L 283,22 L 310,22 L 263,122 L 237,122 Z" fill="url(#kvTeal96)" />
+
+    <path d="M 100,110 C 100,110 130,124 190,124 C 250,124 285,108 285,108 C 295,100 290,92 280,95 C 265,100 240,105 190,105 C 140,105 115,96 108,94 C 98,92 95,102 100,110 Z" fill="url(#kvHull96)" stroke="#261b0a" stroke-width="2" />
+    <path d="M 115,95 C 120,68 150,53 190,53 C 230,53 260,66 268,95 C 240,93 140,93 115,95 Z" fill="url(#kvRoof96)" stroke="#423214" stroke-width="2.5" />
+    
+    <path d="M 134,93 C 134,79 147,79 147,93 Z" fill="#0b171a" />
+    <path d="M 159,93 C 159,72 181,72 181,93 Z" fill="#0b171a" />
+    <path d="M 193,93 C 193,72 215,72 215,93 Z" fill="#0b171a" />
+    <path d="M 227,93 C 227,80 240,80 240,93 Z" fill="#0b171a" />
+  </g>
+</svg>

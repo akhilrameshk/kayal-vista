@@ -20,6 +20,23 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  
+  // Custom High-Quality Transparent Favicon Integration
+  icons: {
+    icon: [
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      }
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+
+  // Point explicitly to your site's manifest mapping
+  manifest: '/site.webmanifest',
+
   openGraph: {
     title: 'Kayal Vista | Premium Kerala Houseboat Bookings',
     description: 'Discover the ultimate backwater experience in Kerala with luxury houseboats.',
