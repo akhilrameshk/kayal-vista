@@ -323,9 +323,17 @@ export default function ExploreAlappuzhaBackwaters() {
     >
       {/* Elegant Header */}
       <Box sx={{ mb: 5, pb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Avatar sx={{ bgcolor: '#0284c7', width: 56, height: 56 }}>
-          <WavesIcon sx={{ fontSize: 32 }} />
-        </Avatar>
+       <Avatar 
+  sx={{ 
+    bgcolor: '#0284c7', 
+    width: 56, 
+    height: 56,
+    // Hide on mobile (xs) and tablet (sm), display on desktop layouts (md and up)
+    display: { xs: 'none', md: 'flex' } 
+  }}
+>
+  <WavesIcon sx={{ fontSize: 32 }} />
+</Avatar>
         <Box>
           <Typography variant="h4" color="text.primary" sx={{ fontWeight: 800, letterSpacing: '-0.75px', mb: 0.5 }}>
             Explore Alappuzha Backwaters
@@ -358,14 +366,14 @@ export default function ExploreAlappuzhaBackwaters() {
             justifyContent: 'center',
             color: '#ffffff',
             flexDirection: 'column',
-            p: 4,
+            p: 5,
             textAlign: 'center'
           }}
         >
           <Chip 
             label="FEATURED VISTA EXPERIENCE" 
             size="small" 
-            sx={{ bgcolor: 'rgba(255, 255, 255, 0.2)', color: '#ffffff', fontWeight: 700, mb: 2, letterSpacing: '1px' }} 
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.2)', color: '#ffffff', fontWeight: 700,mt:2, mb: 2, letterSpacing: '1px' }} 
           />
           <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: '-1px', mb: 1, fontSize: { xs: '1.75rem', md: '2.75rem' } }}>
             Vembanad Luxury Cruise Experience
@@ -471,7 +479,7 @@ export default function ExploreAlappuzhaBackwaters() {
                 <Typography variant="h4" sx={{ fontWeight: 900, color: 'primary.main' }}>
                   ₹8,000
                 </Typography>
-                <Typography variant="body2" color="text.secondary">/ day-cruise</Typography>
+                <Typography variant="body2" color="text.secondary">/ base price</Typography>
               </Stack>
             </Box>
             

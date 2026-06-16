@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+// app/components/Header.tsx
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,8 +22,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -47,11 +47,7 @@ const OWNER_LINKS = [
   { label: 'Booking List', path: '/bookings' }
 ];
 
-interface HeaderProps {
-  onToggleThemeMode?: () => void;
-}
-
-export default function Header({ onToggleThemeMode }: HeaderProps) {
+export default function Header() {
   const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
@@ -122,7 +118,6 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
 
           {/* Desktop Action Links */}
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', display: { xs: 'none', md: 'flex' } }}>
-            <IconButton onClick={onToggleThemeMode}>{theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}</IconButton>
             {isAuthenticated ? (
               <Button onClick={handleLogoutAction} color="error" startIcon={<LogoutIcon />}>Logout</Button>
             ) : (
@@ -149,7 +144,7 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
                     {userName}
                   </Typography>
                   {userRole && (
-                    <Typography variant="caption" color="theme.palette.text.secondary" sx={{ fontWeight: 600, textTransform: 'lowercase', color: theme.palette.text.secondary }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'lowercase', color: theme.palette.text.secondary }}>
                       {userRole.replace('_', ' ')}
                     </Typography>
                   )}
@@ -157,16 +152,6 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
               </Stack>
             </Box>
           )}
-
-          {/* Interactive Utility Section (Theme Toggle) */}
-          <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, pl: 1 }}>
-              {theme.palette.mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
-            </Typography>
-            <IconButton onClick={onToggleThemeMode} sx={{ color: theme.palette.text.primary }}>
-              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-          </Box>
 
           <Divider sx={{ borderColor: theme.palette.divider }} />
 
@@ -192,6 +177,7 @@ export default function Header({ onToggleThemeMode }: HeaderProps) {
               </ListItem>
             ))}
           </List>
+          
           <Divider sx={{ borderColor: theme.palette.divider }} />
 
           {/* Authenticated Actions Footer (Login / Logout) */}

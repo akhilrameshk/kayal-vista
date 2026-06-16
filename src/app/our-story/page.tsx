@@ -168,48 +168,53 @@ export default function AboutPage() {
         <Grid container spacing={4}>
           {/* Value Card 1 */}
           <Grid size={{ xs: 12, md: 4 }}>
-            <Card 
-              elevation={0}
-              sx={{ 
-                borderRadius: 5, 
-                 bgcolor: CARD_PALETTES[0].iconBg,
-                border: '1px solid', 
-                borderColor: 'divider',
-                height: '100%',
-                boxShadow: `0 10px 30px rgba(0,0,0,0.01)`,
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-6px)',
-                  borderColor: CARD_PALETTES[0].hoverBorder,
-                  boxShadow: `0 20px 35px ${CARD_PALETTES[0].glow}, 0 4px 12px rgba(0,0,0,0.03)`
-                }
-              }}
-            >
-              <CardContent sx={{ p: 4 }}>
-                <Stack spacing={2.5}>
-                  <Box 
-                    sx={{ 
-                      bgcolor: CARD_PALETTES[0].iconBg, 
-                      p: 1.75, 
-                      borderRadius: 3, 
-                      color: CARD_PALETTES[0].iconColor, 
-                      display: 'flex', 
-                      width: 'fit-content',
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.01)'
-                    }}
-                  >
-                    <AnchorIcon sx={{ fontSize: 28 }} />
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary' }}>
-                    Rooted Locally
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem' }}>
-                    Every cruise option is deeply vetted by operators who understand the unique geography and waters of Vembanad Lake.
-                  </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
+  <Card 
+    elevation={0}
+    sx={{ 
+      borderRadius: 5, 
+      bgcolor: CARD_PALETTES[0].iconBg,
+      border: '1px solid', 
+      borderColor: 'divider',
+      height: '100%',
+      boxShadow: `0 10px 30px rgba(0,0,0,0.01)`,
+      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+      '&:hover': {
+        transform: 'translateY(-6px)',
+        borderColor: CARD_PALETTES[0].hoverBorder,
+        boxShadow: `0 20px 35px ${CARD_PALETTES[0].glow}, 0 4px 12px rgba(0,0,0,0.03)`
+      }
+    }}
+  >
+    <CardContent sx={{ p: 4 }}>
+      {/* 1. Added alignItems="center" to horizontally center the stack's children */}
+      <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
+        <Box 
+          sx={{ 
+            bgcolor: CARD_PALETTES[0].iconBg, 
+            p: 1.75, 
+            borderRadius: 3, 
+            color: CARD_PALETTES[0].iconColor, 
+            display: 'flex', 
+            width: 'fit-content',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.01)'
+          }}
+        >
+          <AnchorIcon sx={{ fontSize: 28 }} />
+        </Box>
+
+        {/* 2. Added textAlign: 'center' to keep multi-line headings aligned */}
+        <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary', textAlign: 'center' }}>
+          Rooted Locally
+        </Typography>
+
+        {/* 3. Added textAlign: 'center' to center-align the main description paragraph */}
+        <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem', textAlign: 'center' }}>
+          Every cruise option is deeply vetted by operators who understand the unique geography and waters of Vembanad Lake.
+        </Typography>
+      </Stack>
+    </CardContent>
+  </Card>
+</Grid>
 
           {/* Value Card 2 */}
           <Grid size={{ xs: 12, md: 4 }}>
@@ -230,8 +235,8 @@ export default function AboutPage() {
                 }
               }}
             >
-              <CardContent sx={{ p: 4 }} >
-                <Stack spacing={2.5}>
+              <CardContent sx={{ p: 4 }}  >
+                <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
                   <Box 
                     sx={{ 
                       bgcolor: CARD_PALETTES[1].iconBg, 
@@ -245,10 +250,10 @@ export default function AboutPage() {
                   >
                     <MapIcon sx={{ fontSize: 28 }} />
                   </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary', textAlign: 'center' }}>
                     Vantage Optimization
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem', textAlign: 'center' }}>
                     We map out route assets specifically designed for golden hours, wide open breezes, and iconic landscape viewing.
                   </Typography>
                 </Stack>
@@ -276,7 +281,7 @@ export default function AboutPage() {
               }}
             >
               <CardContent sx={{ p: 4 }}>
-                <Stack spacing={2.5}>
+                <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
                   <Box 
                     sx={{ 
                       bgcolor: CARD_PALETTES[2].iconBg, 
@@ -290,10 +295,10 @@ export default function AboutPage() {
                   >
                     <SecurityIcon sx={{ fontSize: 28 }} />
                   </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: 'text.primary', textAlign: 'center' }}>
                     Strict Quality Care
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: '0.925rem', textAlign: 'center' }}>
                     No hidden operational surprises. Transparent pricing structures and completely verified boat configurations.
                   </Typography>
                 </Stack>

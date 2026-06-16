@@ -42,7 +42,7 @@ export default function Footer() {
         borderColor: 'divider' 
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{  display: { xs: 'none', sm: 'none',md:"block" },}}>
         <Stack spacing={1}>
         
           {/* ROW 1: MAIN SITE NAVIGATION DIRECTORY (4-COLUMN BALANCED ALIGNMENT) */}

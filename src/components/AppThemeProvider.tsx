@@ -9,6 +9,7 @@ import { Box } from '@mui/material';
 import { getThemeTokens } from '@/theme/theme';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import FloatingActionButtons from '@/components/FloatingActionButtons';
 
 export default function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
@@ -44,13 +45,14 @@ export default function AppThemeProvider({ children }: { children: React.ReactNo
     <ThemeProvider theme={activeTheme}>
       <CssBaseline /> 
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header onToggleThemeMode={handleToggleThemeMode} />
+        <Header  />
         
         <Box component="main" sx={{ flexGrow: 1 }}>
           {children}
         </Box>
         
         <Footer />
+        <FloatingActionButtons onToggleThemeMode={handleToggleThemeMode}/>
       </Box>
     </ThemeProvider>
   );
