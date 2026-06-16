@@ -28,7 +28,8 @@ export async function POST(req: Request) {
       basePrice: Number(basePrice),
       images: images || [], // Ensure this is saved
       ownerId: ownerId,
-      status: 'PENDING'
+      status: 'ACTIVE',
+      features: body.features || []
     });
 
     return NextResponse.json({ success: true, boat: newBoat }, { status: 201 });
