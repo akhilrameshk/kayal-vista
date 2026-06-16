@@ -36,7 +36,7 @@ export default function Footer() {
       sx={{ 
         bgcolor: 'background.paper', 
         pt: 8, 
-        pb: { xs: 12, sm: 5 }, // Adaptive padding padding on mobile to clear the sticky menu bar
+        pb: { xs: 0, sm: 0, md: 5 }, // Adaptive padding padding on mobile to clear the sticky menu bar
         mt: 'auto', 
         borderTop: '1px solid', 
         borderColor: 'divider' 

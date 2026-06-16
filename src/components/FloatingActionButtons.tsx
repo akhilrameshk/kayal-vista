@@ -58,13 +58,14 @@ export default function FloatingActionButtons({ onToggleThemeMode }: FloatingAct
       <Box
         sx={{
           position: 'fixed',
-          bottom: { xs: 24, sm: 24 }, // Kept neat and clear at 24px since sticky navigation bar is removed
+          bottom: { xs: 40, sm: 40 ,md:24}, // Kept neat and clear at 40px since sticky navigation bar is removed
           right: 24,
           zIndex: theme.zIndex.speedDial,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 2,
+           pb: { xs: 7, sm: 7,md:3 },
         }}
       >
         {/* WhatsApp Button */}
