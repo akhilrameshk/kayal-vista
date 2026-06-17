@@ -53,7 +53,10 @@ export default function BoatListTable({ allowedRole }: { allowedRole: 'SUPER_ADM
       setLoading(false); 
     }
   };
-
+const handleNavigateToAddBoat = () => {
+    // Optional: add any processing logic here
+    router.push('/owner/boats/add');
+  };
   useEffect(() => { 
     fetchFleet(); 
   }, []);
@@ -173,7 +176,7 @@ export default function BoatListTable({ allowedRole }: { allowedRole: 'SUPER_ADM
           <Button 
             variant="contained" 
             startIcon={<AddIcon />} 
-            onClick={() => handleOpenModal()}
+           onClick={handleNavigateToAddBoat}
             sx={{ borderRadius: 2, fontWeight: 700, px: 3 }}
           >
             Add New Vessel

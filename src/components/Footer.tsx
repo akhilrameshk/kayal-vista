@@ -63,8 +63,8 @@ export default function Footer() {
                   <MuiLink component={Link} href="/admin/dashboard" color="text.secondary" underline="hover" sx={{ fontSize: '0.875rem' }}>Admin Console</MuiLink>
                 ) : (
                   <>
-                    <MuiLink component={Link} href="/explore-vista" color="text.secondary" underline="hover" sx={{ fontSize: '0.875rem' }}>Explore Vistas</MuiLink>
-                    <MuiLink component={Link} href="/operator-portal" color="text.secondary" underline="hover" sx={{ fontSize: '0.875rem' }}>Operator Portal</MuiLink>
+                    <MuiLink component={Link} href="/how-it-works" color="text.secondary" underline="hover" sx={{ fontSize: '0.875rem' }}>How it works</MuiLink>
+                    <MuiLink component={Link} href="/operator-portal" color="text.secondary" underline="hover" sx={{ fontSize: '0.875rem' }}>Partner With Us</MuiLink>
                   </>
                 )}
               </Stack>
@@ -159,7 +159,7 @@ export default function Footer() {
           ) : (
             <BottomNavigationAction 
               label="Explore" 
-              value="/explore-vista" 
+              value="/how-it-works" 
               icon={<ExploreIcon />} 
             />
           )}

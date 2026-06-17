@@ -28,10 +28,10 @@ import LoginIcon from '@mui/icons-material/Login';
 
 // Navigation Configs
 const PUBLIC_LINKS = [
-  { label: 'Explore Vistas', path: '/explore-vista' },
-  { label: 'Operator Portal', path: '/operator-portal' },
+  { label: 'How it works', path: '/how-it-works' },
+  { label: 'Partner With Us', path: '/operator-portal' },
   { label: 'Our Story', path: '/our-story' },
-  { label: 'Contact Crew', path: '/contact' }
+  { label: 'Contact Us' , path: '/contact' }
 ];
 
 const ADMIN_LINKS = [
