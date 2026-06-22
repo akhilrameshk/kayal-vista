@@ -16,7 +16,8 @@ import {
   Chip,
   Grid,
   Paper,
-  CardMedia
+  CardMedia,
+  Divider
 } from '@mui/material';
 
 import { DatePicker } from '@mui/x-date-pickers';
@@ -27,9 +28,13 @@ import { addDays, format, startOfDay } from 'date-fns';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 
 import BookingModal from '@/components/BookingModal';
 import DetailsModal from '@/components/DetailsModal';
+import RouteMenuPopup from '@/components/RouteMenuPopup'; 
+import RefundPolicyPopup from '@/components/RefundPolicyPopup';
 
 const CARD_PALETTES = [
   {
@@ -55,7 +60,6 @@ const CARD_PALETTES = [
 export default function LandingPage() {
   const router = useRouter();
   
-  // Section layout references for scrolling focus window triggers
   const searchSectionRef = useRef<HTMLDivElement>(null);
 
   const [houseboats, setHouseboats] = useState<any[]>([]);
@@ -64,23 +68,21 @@ export default function LandingPage() {
   const [totalShikkaras, setTotalShikkaras] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // 1. STATE MANAGEMENT (Clean local native Date states)
   const [dates, setDates] = useState<{ start: Date | null; end: Date | null }>({
     start: startOfDay(new Date()),
     end: startOfDay(addDays(new Date(), 1))
   });
 
-  // Programmatic control state variables to control picker popping open
   const [startPickerOpen, setStartPickerOpen] = useState(false);
 
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isRouteMenuOpen, setIsRouteMenuOpen] = useState(false); 
+  const [isRefundPopupOpen, setIsRefundPopupOpen] = useState(false);
   const [selectedBoat, setSelectedBoat] = useState<any>(null);
 
-  // 2. API SYNC (Now partitions explicitly by exact data string matches)
   const fetchVessels = useCallback(async () => {
     if (!dates.start || !dates.end) {
-      // If dates aren't selected when trying to search, prompt selection
       setStartPickerOpen(true);
       searchSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -94,8 +96,7 @@ export default function LandingPage() {
       const res = await fetch(`/api/customer/available-boats?start=${startStr}&end=${endStr}`);
       const data = await res.json();
       const cleanData = Array.isArray(data) ? data : [];
-console.log("Fetched Vessels Data:", cleanData);
-      // Strict String Category Filtering Logic
+
       const filteredHouseboats = cleanData.filter((b: any) => b.type === 'Luxury Houseboat');
       const filteredShikkaras = cleanData.filter((b: any) => b.type === 'Traditional');
 
@@ -115,7 +116,6 @@ console.log("Fetched Vessels Data:", cleanData);
     fetchVessels();
   }, [fetchVessels]);
 
-  // 3. NORMALIZATION HANDLERS
   const handleStartDateChange = (val: Date | null) => {
     if (!val) {
       setDates({ start: null, end: null });
@@ -136,16 +136,19 @@ console.log("Fetched Vessels Data:", cleanData);
     setDates(prev => ({ ...prev, end: startOfDay(val) }));
   };
 
-  // Reusable Interceptor to verify timelines before loading modal overlays
   const executeWithDateValidation = (actionCallback: () => void) => {
     if (!dates.start || !dates.end) {
       searchSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => {
-        setStartPickerOpen(true);
-      }, 400);
+      mixinsTimeoutPicker();
     } else {
       actionCallback();
     }
+  };
+
+  const mixinsTimeoutPicker = () => {
+    setTimeout(() => {
+      setStartPickerOpen(true);
+    }, 400);
   };
 
   const handleViewAllNavigation = (vesselType: string) => {
@@ -162,7 +165,6 @@ console.log("Fetched Vessels Data:", cleanData);
     router.push(`/boats?${params.toString()}`);
   };
 
-  // Dry layout generator function for mapping card elements out uniformly
   const renderVesselGrid = (vesselsList: any[]) => (
     <Grid 
       container 
@@ -180,10 +182,28 @@ console.log("Fetched Vessels Data:", cleanData);
     >
       {vesselsList.map((item: any, index) => {
         const palette = CARD_PALETTES[index % CARD_PALETTES.length];
+        const displayPrice = `₹${(item.basePrice || item.price || 0).toLocaleString('en-IN')}`;
+        
+        const localizedPackageData = {
+          id: item._id,
+          name: item.name,
+          price: displayPrice,
+          routes: item.routes || [
+            { time: '11:30 AM', title: 'Boarding Point Departure', details: 'Check-in on board with traditional spiced drinks as the cruise heads down deep backwater channels.' },
+            { time: '01:30 PM', title: 'Mid-Lake Anchor Break', details: 'Vessel anchors in calm waters for a freshly prepared multi-course Kerala lunch spread.' },
+            { time: '04:00 PM', title: 'Village Sightseeing', details: 'Cruise past authentic rural water-bound paddy farming loops and visual canal bridges.' },
+            { time: '05:30 PM', title: 'Dock Check-out', details: 'Return navigation back safely to the primary base jetty station.' }
+          ],
+          menu: item.menu || [
+            { meal: 'Welcome Refreshments', items: ['Fresh Local Tender Coconut Water', 'Traditional Spiced Lime Drink'] },
+            { meal: 'On-Board Feast', items: ['Kuttanadan Matta Rice', 'Authentic Karimeen Fish Fry', 'Kerala Fried Chicken Masala', 'Vegetable Thoran & Crisp Papadam'] },
+            { meal: 'Evening High Tea', items: ['Hot Banana Fritters (Pazham Pori)', 'Fresh Handcrafted Malabar Tea'] }
+          ]
+        };
+
         return (
           <Grid 
-          size={{ xs: 10.5, sm: 6, md: 4 }}
-           
+            size={{ xs: 10.5, sm: 6, md: 4 }}
             key={item?._id}
             sx={{
               flexShrink: { xs: 0, sm: 1 },
@@ -198,14 +218,41 @@ console.log("Fetched Vessels Data:", cleanData);
                 </Typography>
               </Box>
               <CardContent sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-                  <Chip icon={<MeetingRoomIcon sx={{ fontSize: '16px !important' }}/>} label={`${item.rooms || 0} Rooms`} size="small" />
-                  <Chip icon={<GroupIcon sx={{ fontSize: '16px !important' }}/>} label={`${item.guests || item.capacity || 2} Guests`} size="small" />
-                </Stack>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <Box>
+                  <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                    <Chip icon={<MeetingRoomIcon sx={{ fontSize: '16px !important' }}/>} label={`${item.rooms || 0} Rooms`} size="small" />
+                    <Chip icon={<GroupIcon sx={{ fontSize: '16px !important' }}/>} label={`${item.guests || item.capacity || 2} Guests`} size="small" />
+                  </Stack>
+                  
+                  {/* Unified Information Action Row */}
+                  <Stack direction="column" spacing={1} sx={{ mb: 1, flexWrap: 'wrap' }}>
+                    <Button
+                      variant="text"
+                      size="small"
+                      startIcon={<RestaurantMenuIcon />}
+                      sx={{ color: '#00796b', fontWeight: 700, p: 0, '&:hover': { background: 'transparent', textDecoration: 'underline' } }}
+                      onClick={() => executeWithDateValidation(() => { setSelectedBoat(localizedPackageData); setIsRouteMenuOpen(true); })}
+                    >
+                      Route & Food Details
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="small"
+                      startIcon={<AssignmentReturnIcon />}
+                      sx={{ color: '#00796b', fontWeight: 700, p: 0, '&:hover': { background: 'transparent', textDecoration: 'underline' } }}
+                      onClick={() => executeWithDateValidation(() => { setSelectedBoat(item); setIsRefundPopupOpen(true); })}
+                    >
+                      Refund Policy
+                    </Button>
+                  </Stack>
+
+                  <Divider sx={{ my: 1.5 }} />
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mt: 4 }}>
                   <Box>
                     <Typography variant="caption" color="text.secondary" >Base Price</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 900, color: palette.accentColor }}>₹{(item.basePrice || item.price || 0).toLocaleString('en-IN')}</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 900, color: palette.accentColor }}>{displayPrice}</Typography>
                   </Box>
                   <Stack direction="row" spacing={1}>
                     <Button 
@@ -246,7 +293,7 @@ console.log("Fetched Vessels Data:", cleanData);
           <Typography variant="h2" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2.5rem', md: '3.75rem' } }}>Kayal Vista</Typography>
           <Typography variant="h5" sx={{ mb: 4, fontSize: { xs: '1.1rem', md: '1.5rem' } }}>Discover Kerala Backwaters</Typography>
 
-          {/* SEARCH BOX BOX SECTION CONTAINER */}
+          {/* SEARCH BOX SECTION */}
           <Paper 
             ref={searchSectionRef}
             sx={{ 
@@ -305,7 +352,7 @@ console.log("Fetched Vessels Data:", cleanData);
         ) : (
           <Stack spacing={8}>
             
-            {/* 1. HOUSEBOATS ZONE (Filters: 'Luxury Houseboat') */}
+            {/* 1. HOUSEBOATS ZONE */}
             {houseboats.length > 0 && (
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, px: { xs: 2, sm: 0 } }}>
@@ -326,7 +373,7 @@ console.log("Fetched Vessels Data:", cleanData);
               </Box>
             )}
 
-            {/* 2. SHIKKARAS ZONE (Filters: 'Traditional') */}
+            {/* 2. SHIKKARAS ZONE */}
             {shikkaras.length > 0 && (
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, px: { xs: 2, sm: 0 } }}>
@@ -351,11 +398,13 @@ console.log("Fetched Vessels Data:", cleanData);
         )}
       </Container>
 
-      {/* MODALS */}
+      {/* OVERLAY MODAL MANAGER */}
       {selectedBoat && (
         <>
           <BookingModal open={isBookingModalOpen} handleClose={() => { setIsBookingModalOpen(false); fetchVessels(); }} boat={selectedBoat} />
           <DetailsModal open={isDetailsModalOpen} handleClose={() => setIsDetailsModalOpen(false)} boat={selectedBoat} />
+          <RouteMenuPopup open={isRouteMenuOpen} onClose={() => setIsRouteMenuOpen(false)} packageData={selectedBoat} />
+          <RefundPolicyPopup open={isRefundPopupOpen} onClose={() => setIsRefundPopupOpen(false)} boatName={selectedBoat?.name} />
         </>
       )}
     </LocalizationProvider>

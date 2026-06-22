@@ -29,7 +29,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import PeopleIcon from '@mui/icons-material/People';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { executePortalLogin } from '@/utils/auth';
 
 export default function LoginPage() {
   const theme = useTheme();
@@ -58,11 +57,18 @@ export default function LoginPage() {
   // Dynamic Loader Hook State
   const [isLoading, setIsLoading] = useState(false);
 
+  // Reset inputs on switch to prevent dirty shared data payloads
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
     setFeedbackError(null);
     setFeedbackSuccess(null);
-    setShowPassword(false); // Reset visibility state when switching tabs
+    setShowPassword(false);
+    setUsername('');
+    setPassword('');
+    setFullName('');
+    setEmail('');
+    setContactDetails('');
+    setRegisterRole('NORMAL_USER');
   };
 
   const handleClickShowPassword = () => {
@@ -73,76 +79,95 @@ export default function LoginPage() {
     event.preventDefault();
   };
 
-  // 1. SIGN IN FLOW (Super Admin check + Registered Users check)
+  // 1. DYNAMIC API SIGN IN HANDLER WITH CUSTOMER DASHBOARD ROUTING
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedbackError(null);
+    setFeedbackSuccess(null);
+    setIsLoading(true);
 
-// 1. DYNAMIC API SIGN IN HANDLER
-const handleLoginSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setFeedbackError(null);
-  setFeedbackSuccess(null);
-  setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', username, password }),
+      });
 
-  try {
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', username, password }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Authentication rejected.');
+console.log("✅ Authentication successful, received user data:", data);
+      // Save core access keys safely into memory vectors for dashboard usage
+      localStorage.setItem('kayal_vista_auth_token', data.token);
+      localStorage.setItem('kayal_vista_user_role', data.user.role);
+      localStorage.setItem('kayal_vista_user_name', data.user.name);
+      localStorage.setItem('kayal_vista_user_id', data.user.id || data.user._id);
+      localStorage.setItem('kayal_vista_user_email', data.user.email || '');
+      localStorage.setItem('kayal_vista_user_phone', data.user.contactDetails || '');
 
-    if (!res.ok) throw new Error(data.error || 'Authentication rejected.');
+      setFeedbackSuccess(`Session verified successfully! Routing dashboard properties...`);
 
-    localStorage.setItem('kayal_vista_auth_token', data.token);
-    localStorage.setItem('kayal_vista_user_role', data.user.role);
-    localStorage.setItem('kayal_vista_user_name', data.user.name);
+      // Dynamic Navigation Routing Tree Engine
+      if (data.user.role === 'SUPER_ADMIN') {
+        router.push('/admin/dashboard');
+      } else if (data.user.role === 'BOAT_OWNER') {
+        router.push('/owner');
+      } else {
+        router.push('/dashboard/bookings');
+      }
+    } catch (err: any) {
+      setFeedbackError(err.message);
+      setIsLoading(false);
+    }
+  };
 
-    setFeedbackSuccess(`Session verified successfully! Routing dashboard properties...`);
-   // console.log("Login successful, user data:", data.user);
-      router.push(data.user.role === 'SUPER_ADMIN' ? '/admin/dashboard' : '/owner');
-  } catch (err: any) {
-    setFeedbackError(err.message);
-    setIsLoading(false);
-  }
-};
+  // 2. DYNAMIC API ACCESSED REGISTRATION HANDLER WITH CUSTOMER DASHBOARD ROUTING
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedbackError(null);
+    setFeedbackSuccess(null);
+    setIsLoading(true);
 
-// 2. DYNAMIC API ACCESSED REGISTRATION HANDLER
-const handleRegisterSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setFeedbackError(null);
-  setFeedbackSuccess(null);
-  setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'register',
+          username,
+          password,
+          fullName,
+          email,
+          contactDetails,
+          role: registerRole
+        }),
+      });
 
-  try {
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'register',
-        username,
-        password,
-        fullName,
-        email,
-        contactDetails,
-        role: registerRole
-      }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Registration rejected.');
 
-    if (!res.ok) throw new Error(data.error || 'Registration rejected.');
+      localStorage.setItem('kayal_vista_auth_token', data.token);
+      localStorage.setItem('kayal_vista_user_role', data.user.role);
+      localStorage.setItem('kayal_vista_user_name', data.user.name);
+      localStorage.setItem('kayal_vista_user_id', data.user.id || data.user._id);
+      localStorage.setItem('kayal_vista_user_email', data.user.email || '');
+      localStorage.setItem('kayal_vista_user_phone', data.user.contactDetails || '');
 
-    localStorage.setItem('kayal_vista_auth_token', data.token);
-    localStorage.setItem('kayal_vista_user_role', data.user.role);
-    localStorage.setItem('kayal_vista_user_name', data.user.name);
+      setFeedbackSuccess(`Profile built cleanly! Injecting session access vectors...`);
 
-    setFeedbackSuccess(`Profile built cleanly! Injecting session access vectors...`);
-   router.push(data.user.role === 'SUPER_ADMIN' ? '/admin/dashboard' : '/owner');
-  } catch (err: any) {
-    setFeedbackError(err.message);
-    setIsLoading(false);
-  }
-};
+      if (data.user.role === 'SUPER_ADMIN') {
+        router.push('/admin/dashboard');
+      } else if (data.user.role === 'BOAT_OWNER') {
+        router.push('/owner');
+      } else {
+        router.push('/dashboard/bookings');
+      }
+    } catch (err: any) {
+      setFeedbackError(err.message);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '85vh', display: 'flex', alignItems: 'center', py: 6 }}>
@@ -171,15 +196,15 @@ const handleRegisterSubmit = async (e: React.FormEvent) => {
             borderColor: theme.palette.divider
           }}
         >
-          {/* CONTROL TAB TRIPPERS FOR INTUITIVE USER ROUTING */}
-       <Tabs 
-  value={activeTab} 
-  onChange={handleTabChange} 
-  variant="fullWidth"
-  textColor="primary"
-  indicatorColor="primary"
-  sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
->
+          {/* CONTROL TAB TRIPPERS */}
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
+          >
             <Tab label="Sign In" sx={{ fontWeight: 700, textTransform: 'none', fontSize: '0.95rem' }} />
             <Tab label="Register Account" sx={{ fontWeight: 700, textTransform: 'none', fontSize: '0.95rem' }} />
           </Tabs>

@@ -37,34 +37,36 @@ import StarIcon from '@mui/icons-material/Star';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WavesIcon from '@mui/icons-material/Waves';
 import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import BookingModal from '@/components/BookingModal';
 import DetailsModal from '@/components/DetailsModal';
+import RouteMenuPopup from '@/components/RouteMenuPopup';
 
 const CARD_PALETTES = [
   {
-    gradient: 'linear-gradient(135deg, #004d40 0%, #00796b 100%)', // Kerala Deep Teal
+    gradient: 'linear-gradient(135deg, #004d40 0%, #00796b 100%)',
     lightBg: '#e0f2f1',
     accentColor: '#00796b',
     btnGradient: 'linear-gradient(135deg, #00796b, #4db6ac)',
     glow: 'rgba(0, 121, 107, 0.12)'
   },
   {
-    gradient: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 100%)', // Vembanad Lake Ocean Blue
+    gradient: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 100%)',
     lightBg: '#e3f2fd',
     accentColor: '#1565c0',
     btnGradient: 'linear-gradient(135deg, #1565c0, #64b5f6)',
     glow: 'rgba(21, 101, 192, 0.12)'
   },
   {
-    gradient: 'linear-gradient(135deg, #3e2723 0%, #5d4037 100%)', // Premium Coir & Wood Earth
+    gradient: 'linear-gradient(135deg, #3e2723 0%, #5d4037 100%)',
     lightBg: '#efebe9',
     accentColor: '#5d4037',
     btnGradient: 'linear-gradient(135deg, #5d4037, #8d6e63)',
     glow: 'rgba(93, 64, 55, 0.12)'
   },
   {
-    gradient: 'linear-gradient(135deg, #e65100 0%, #f57c00 100%)', // Kuttanad Sunset Orange
+    gradient: 'linear-gradient(135deg, #e65100 0%, #f57c00 100%)',
     lightBg: '#fff3e0',
     accentColor: '#f57c00',
     btnGradient: 'linear-gradient(135deg, #f57c00, #ffb74d)',
@@ -79,7 +81,6 @@ function BoatListingsContent() {
   const initialStart = searchParams.get('start') ? new Date(searchParams.get('start')!) : new Date();
   const initialEnd = searchParams.get('end') ? new Date(searchParams.get('end')!) : new Date();
   
-  // Parse initial state, fallback to 'Luxury Houseboat'
   const initialCategory = searchParams.get('type') || searchParams.get('category') || 'Luxury Houseboat';
 
   const [boats, setBoats] = useState<any[]>([]);
@@ -95,6 +96,7 @@ function BoatListingsContent() {
 
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isRouteMenuOpen, setIsRouteMenuOpen] = useState(false);
   const [selectedBoat, setSelectedBoat] = useState<any>(null);
 
   const fetchBoats = useCallback(async () => {
@@ -118,15 +120,35 @@ function BoatListingsContent() {
     fetchBoats();
   }, [fetchBoats]);
 
-  // Combined Dynamic Filtering Engine
   useEffect(() => {
     let result = boats;
 
-    // Filters against local dropdown state string selection
+    // Strict Categorization Logic to prevent Shikkara leaking into Houseboats
     if (selectedCategory) {
-      result = result.filter(
-        (b: any) => b.type === selectedCategory || b.category === selectedCategory
-      );
+      result = result.filter((b: any) => {
+        const typeStr = (b.type || '').toLowerCase();
+        const catStr = (b.category || '').toLowerCase();
+        const nameStr = (b.name || '').toLowerCase();
+
+        if (selectedCategory === 'Traditional') {
+          // If Shikkara filter is on, look for shikkara or traditional keywords
+          return (
+            typeStr.includes('shikkara') || 
+            catStr.includes('shikkara') || 
+            typeStr.includes('traditional') || 
+            catStr.includes('traditional') ||
+            nameStr.includes('shikkara')
+          );
+        } else {
+          // If Luxury Houseboat is selected, ensure it doesn't contain Shikkara properties
+          const isShikkara = (
+            typeStr.includes('shikkara') || 
+            catStr.includes('shikkara') || 
+            nameStr.includes('shikkara')
+          );
+          return !isShikkara;
+        }
+      });
     }
 
     if (searchTerm.trim()) {
@@ -187,45 +209,47 @@ function BoatListingsContent() {
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 2.5, md: 3.5 },
-            display: 'flex',
-            gap: 2.5,
-            flexDirection: 'column',
-            alignItems: 'stretch',
+            p: { xs: 2.5, md: 2 },
             borderRadius: '16px',
             border: '1px solid rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(16px)',
             boxShadow: '0 20px 40px rgba(15, 32, 39, 0.08)'
           }}
         >
-          {/* TOP BAR: SEARCH TEXT */}
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder={`Search ${selectedCategory.toLowerCase()}s, operators, locations...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#00796b' }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
+          <Box 
             sx={{ 
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '10px',
-                '&:hover fieldset': { borderColor: '#00796b' },
-                '&.Mui-focused fieldset': { borderColor: '#00796b', borderWidth: '2px' }
-              }
+              display: 'flex', 
+              gap: 2, 
+              flexDirection: { xs: 'column', md: 'row' }, 
+              alignItems: 'center',
+              width: '100%'
             }}
-          />
+          >
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder={`Search ${selectedCategory.toLowerCase()}s, operators, locations...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: '#00796b' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ 
+                flex: { md: 2 },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                  '&:hover fieldset': { borderColor: '#00796b' },
+                  '&.Mui-focused fieldset': { borderColor: '#00796b', borderWidth: '2px' }
+                }
+              }}
+            />
 
-          {/* BOTTOM BAR: DATES + CATEGORY SELECT MENU + ACTIONS */}
-          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center' }}>
-            
             <DatePicker
               label="Check In"
               value={dates.start}
@@ -233,7 +257,10 @@ function BoatListingsContent() {
               slotProps={{ 
                 textField: { 
                   fullWidth: true,
-                  sx: { '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#fcfdfe' } }
+                  sx: { 
+                    flex: { md: 1 },
+                    '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#fcfdfe' } 
+                  } 
                 } 
               }}
             />
@@ -245,13 +272,15 @@ function BoatListingsContent() {
               slotProps={{ 
                 textField: { 
                   fullWidth: true,
-                  sx: { '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#fcfdfe' } }
+                  sx: { 
+                    flex: { md: 1 },
+                    '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#fcfdfe' } 
+                  } 
                 } 
               }}
             />
 
-            {/* CATEGORY SELECTION FIELD DROPDOWN COMPONENT */}
-            <FormControl fullWidth variant="outlined">
+            <FormControl fullWidth variant="outlined" sx={{ flex: { md: 1.5 } }}>
               <InputLabel id="boat-category-select-label" sx={{ '&.Mui-focused': { color: '#00796b' } }}>
                 Vessel Category
               </InputLabel>
@@ -278,9 +307,7 @@ function BoatListingsContent() {
                 }}
               >
                 <MenuItem value="Luxury Houseboat">Luxury Houseboat</MenuItem>
-                {/* <MenuItem value="Premium Houseboat">Premium Houseboat</MenuItem> */}
                 <MenuItem value="Traditional">Traditional Shikkara</MenuItem>
-                {/* <MenuItem value="Speedboat">High-Speed Motorboat</MenuItem> */}
               </Select>
             </FormControl>
 
@@ -289,12 +316,12 @@ function BoatListingsContent() {
               onClick={fetchBoats}
               startIcon={<CalendarMonthIcon />}
               sx={{
-                px: 4,
+                px: 3,
                 height: '56px',
                 borderRadius: '10px',
                 textTransform: 'none',
                 fontWeight: 700,
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 whiteSpace: 'nowrap',
                 background: 'linear-gradient(135deg, #00796b 0%, #004d40 100%)',
                 boxShadow: '0 4px 14px rgba(0, 121, 107, 0.3)',
@@ -302,7 +329,8 @@ function BoatListingsContent() {
                   background: 'linear-gradient(135deg, #004d40 0%, #00332c 100%)',
                   boxShadow: '0 6px 20px rgba(0, 121, 107, 0.4)',
                 },
-                width: { xs: '100%', md: 'auto' }
+                width: { xs: '100%', md: 'auto' },
+                flexShrink: 0
               }}
             >
               Check Availability
@@ -321,7 +349,6 @@ function BoatListingsContent() {
             </Typography>
           </Box>
         ) : filteredBoats.length === 0 ? (
-          /* EMPTY VIEW STATES */
           <Paper 
             elevation={0} 
             sx={{ 
@@ -351,6 +378,25 @@ function BoatListingsContent() {
             <Grid container spacing={4}>
               {filteredBoats.map((item, index) => {
                 const palette = CARD_PALETTES[index % CARD_PALETTES.length];
+                const displayPrice = `₹${(item.basePrice || item.price || 0).toLocaleString('en-IN')}`;
+
+                const structuralPackageData = {
+                  ...item,
+                  id: item._id,
+                  name: item.name,
+                  price: displayPrice,
+                  routes: item.routes || [
+                    { time: '11:30 AM', title: 'Boarding Punnamada Jetty', details: 'Welcome drinks served as vessel cruises past historic Nehru Trophy racing venues.' },
+                    { time: '01:30 PM', title: 'Vembanad Anchor Break', details: 'Vessel anchors in calm open lake waters for an authentic backwater lunch spread.' },
+                    { time: '04:00 PM', title: 'Rural Village Sightseeing', details: 'Cruise deep through narrow water-bound channels past traditional coir farming hubs.' },
+                    { time: '05:30 PM', title: 'Return Docking Base', details: 'Slow navigation back to base station for evening checkout.' }
+                  ],
+                  menu: item.menu || [
+                    { meal: 'Welcome Drinks', items: ['Fresh Local Tender Coconut Water', 'Spiced Lime Soda'] },
+                    { meal: 'Traditional Feast', items: ['Kuttanadan Matta Rice', 'Authentic Pearlspot Fish Fry (Karimeen)', 'Chicken Kerala Roast', 'Vegetable Thoran & Crisp Pappadam'] },
+                    { meal: 'Evening Treats', items: ['Hot Banana Fritters (Pazham Pori)', 'Handcrafted Cardamom Tea'] }
+                  ]
+                };
 
                 return (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item._id || index}>
@@ -372,7 +418,6 @@ function BoatListingsContent() {
                         }
                       }}
                     >
-                      {/* THUMBNAIL COVER ELEMENT */}
                       <Box sx={{ position: 'relative', overflow: 'hidden' }}>
                         <CardMedia
                           component="img"
@@ -386,7 +431,6 @@ function BoatListingsContent() {
                           }}
                         />
 
-                        {/* BOAT NAME OVERLAY */}
                         <Typography
                           variant="h6"
                           sx={{
@@ -406,7 +450,6 @@ function BoatListingsContent() {
                           {item.name}
                         </Typography>
 
-                        {/* HOST WATERMARK LABEL */}
                         <Box 
                           sx={{ 
                             position: 'absolute',
@@ -429,7 +472,6 @@ function BoatListingsContent() {
                           By: {item.host || item.ownerName || 'Verified Operator'}
                         </Box>
 
-                        {/* EXCLUSIVE EMBLEM */}
                         <Box
                           sx={{
                             position: 'absolute',
@@ -454,7 +496,6 @@ function BoatListingsContent() {
                         </Box>
                       </Box>
 
-                      {/* CONTENT BODY AREA */}
                       <CardContent
                         sx={{
                           display: 'flex',
@@ -469,10 +510,9 @@ function BoatListingsContent() {
                             justifyContent: 'space-between', 
                             alignItems: 'center',
                             gap: 2,
-                            mb: 3.5
+                            mb: 2
                           }}
                         >
-                          {/* ROOM & USER COUNT PILLS */}
                           <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
                             <Chip 
                               icon={<MeetingRoomIcon sx={{ '&&': { color: palette.accentColor, fontSize: 16 } }} />} 
@@ -486,7 +526,6 @@ function BoatListingsContent() {
                             />
                           </Stack>
 
-                          {/* BASE PRICE */}
                           <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
                             <Typography 
                               variant="caption" 
@@ -511,14 +550,35 @@ function BoatListingsContent() {
                                 lineHeight: 1
                               }}
                             >
-                              ₹{(item.basePrice || item.price || 0).toLocaleString('en-IN')}
+                              {displayPrice}
                             </Typography>
                           </Box>
                         </Box>
 
-                        <Box sx={{ mt: 'auto', mb: 2.5 }} />
+                        <Box sx={{ mb: 2.5, mt: 0.5 }}>
+                          <Button
+                            variant="text"
+                            size="small"
+                            startIcon={<RestaurantMenuIcon sx={{ fontSize: '18px !important' }} />}
+                            sx={{ 
+                              color: '#00796b', 
+                              fontWeight: 700, 
+                              textTransform: 'none',
+                              p: 0, 
+                              fontSize: '0.85rem',
+                              '&:hover': { background: 'transparent', textDecoration: 'underline' } 
+                            }}
+                            onClick={() => {
+                              setSelectedBoat(structuralPackageData);
+                              setIsRouteMenuOpen(true);
+                            }}
+                          >
+                            Route & Food Details
+                          </Button>
+                        </Box>
 
-                        {/* ACTION BAR LAYOUT LINKAGE */}
+                        <Box sx={{ mt: 'auto' }} />
+
                         <Box sx={{ display: 'flex', gap: 1.5 }}>
                           <Button
                             variant="outlined"
@@ -577,7 +637,6 @@ function BoatListingsContent() {
         )}
       </Container>
 
-      {/* CORE MODALS CONTAINER */}
       {selectedBoat && (
         <>
           <BookingModal
@@ -593,6 +652,12 @@ function BoatListingsContent() {
             open={isDetailsModalOpen}
             handleClose={() => setIsDetailsModalOpen(false)}
             boat={selectedBoat}
+          />
+
+          <RouteMenuPopup 
+            open={isRouteMenuOpen} 
+            onClose={() => setIsRouteMenuOpen(false)} 
+            packageData={selectedBoat} 
           />
         </>
       )}
